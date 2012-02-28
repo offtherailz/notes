@@ -1,6 +1,6 @@
 # Notes on jQuery Air Captain's Log
 
-## Events
+## Level 1 - Events
 
 ### HTML5 data attributes
 
@@ -119,3 +119,70 @@ Delegate has two main benefits:
 + It can be method chained (`live` cannot?)
 + It's more performant
 
+## Level 2 - AJAX
+
+### Basic AJAX
+
+    $.ajax('/flights', {
+      data: { date: activeDiv },
+      cache: false,
+      timeout: 8000, 
+      beforeSend: function (result) { 
+        $('#error').hide();
+        $('#loading').show();
+      },
+      success: function (result) { 
+        $(activeDiv).html(result);
+        $(activeDiv).show();
+      },
+      complete: function () { 
+        $('#loading').hide();
+      },
+      error: function (result) { 
+        $('#error').show();
+      }
+    });
+
+### Abort incomplete AJAX requests
+
++ Create a state variable and set it to null
++ When the button is hit, check the variable.
+  + If there's something in it, abort that something.
+  + Adjust the error callback not to show an error if the call was
+    aborted.
++ Assign the AJAX call's result to the state variable when you call it.
+
+### Fetching Data using JSON
+
+    $.ajax('/flights/' + flight, {
+      data: { 'class': flightClass },
+      dataType: 'json',
+      success: showTotal
+    });
+
+    function showTotal(json) {
+      $('#price').text(json.price);
+      $('#price').text(json.fees);
+      $('#price').text(json.total);
+      $('#confirm').slideDown();
+    }
+
+### JSONP
+
+JSONP is fetching JSON data from a different domain. Simply switch the
+`dataType` property to use 'jsonp'.
+
+### AJAXifying a login form
+
+    function login(event) {
+      event.preventDefault();
+      $('#login h4').slideUp();
+
+      var form = $(this).serialize();
+
+      $.ajax('/login', { 
+        data: form,
+        dataType: 'script',
+        type: 'post'
+      });
+    }
