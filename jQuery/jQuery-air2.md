@@ -127,18 +127,18 @@ Delegate has two main benefits:
       data: { date: activeDiv },
       cache: false,
       timeout: 8000, 
-      beforeSend: function (result) { 
+      beforeSend: function (result) {
         $('#error').hide();
         $('#loading').show();
       },
-      success: function (result) { 
+      success: function (result) {
         $(activeDiv).html(result);
         $(activeDiv).show();
       },
-      complete: function () { 
+      complete: function () {
         $('#loading').hide();
       },
-      error: function (result) { 
+      error: function (result) {
         $('#error').show();
       }
     });
@@ -180,9 +180,128 @@ JSONP is fetching JSON data from a different domain. Simply switch the
 
       var form = $(this).serialize();
 
-      $.ajax('/login', { 
+      $.ajax('/login', {
         data: form,
         dataType: 'script',
         type: 'post'
       });
     }
+
+## Effects
+
+### Chaining effects
+
+    $('#login').fadeOut().html(...).fadeIn();
+    // better
+    $('#login').fadeout(function () {
+      $(this).html(...).fadeIn();
+    });
+    $('#login').fadeout('fast', function () {
+      $(this).html(...).fadeIn('slow');
+    });
+
+### Effect speed settings
+
++ fast - 200ms
++ default - 400ms
++ slow - 600ms
++ Or use a custom number
+
+### Animate with CSS
+
+    $('...').css('background-color', '#2C1F11');
+    // Call it out even more
+    $('...').css({'background-color', '#2C1F11', 'opacity':'0.5'});
+            .animate({height: '30'}, 'slow');
+
+### Easing
+
+Easing describes the speed of the animation progression. jQuery uses swing
+by default, but there are a number of different options for easing built
+in.
+
+    $('...').slideDown(500, 'linear');
+
+### Using a queue
+
+    $('...').queue(function (next) {
+      $(this).html('...').fadeIn('slow', function () {
+        $('...').slideDown(500, 'linear');
+        $('...').css({ 'background-color': '#2C1F11', 'opacity': '0.5' })
+                .animate({ opacity: '1', height: 30 }, 'slow', 'linear');
+      });
+      next();
+    });
+
+### Effect stopping
+
+    function hideNumberOfFlights(a) {
+      $('...').stop().fadeOut(function () {
+        $(this).remove();
+      });
+    }
+
+## Organization
+
+### each and map utility methods
+
+    sucess: function (result) {
+      $(...).remove();
+      var foo = $.map(flights, function (flight) {
+        ...
+      })
+    }
+
+### Make your own utility methods
+
+Utility functions are not called on jQuery objects.
+
+    (function ($) {
+      $.hello = function() {
+        alert('hello');
+      };
+    })(jQuery);
+
+### Plugins
+
+Plugins are called on jQuery objects
+
+    (function ( $ ) {
+      $.fn.callOut = function (options) {
+        var defaults = {
+          duration: 'fast'
+        }
+        var options = $.extend(defaults, options);
+        this.css({ opacity:0.5 })
+            .animate({ opacity:1 }, options.duration)
+      };
+    })( jQuery );
+
+### Encapsulating your code
+
+Put them into objects. (?)
+
+### Custom events
+
+    $('...').bind({
+      'selectTab': function (e) {
+        // select tab, switch classes, do ajax call
+      }
+    });
+
+    $(document).keydown(function (e) {
+      ....
+      $('...').trigger('selectTab');
+    });
+
+    $('...').click(function (e) {
+      $(this).trigger('selectTab');
+    });
+
+### Template
+
+Templates mean that you don't need to mix so much HTML into your jQuery
+Javascript.
+
+    $('...').tmpl( flights )
+            .appendTo(activeDiv + 'tbody');
