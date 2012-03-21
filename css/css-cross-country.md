@@ -150,3 +150,57 @@ property controls overlap manually. If therer's no z-index set or they are
 equal, then overlap is determined by DOM order (second overlaps first).
 Otherwise, the higher z-index wins. Only positioned elements allow z-index
 to take effect.
+
+## Level 4
+
+### Be DRY
+
+DRY applies to CSS as well as to code. Rather than, for example, setting
+font-family over and over, you might pull it into the body element or
+a parent container. Or you can use a combined selector. Finally, you can
+use selector abstraction. Find things that have significant overlap and
+make one class out of them (say a single button class). Even if they are
+only 80% the same, pull all the similarities into one class, and use
+a second class later for the bits that differ.
+
+Always remember to use shorthand properties where you can to avoid a lot of
+extra declarations for left, right, etc. Important shorthand properties:
+
++ font - size/line-height weight, style, family
++ background - color, image, repeat, x-pos, y-pos
++ list-style - style, position, image
++ margin - top, right, bottom, left
++ padding - top, right, bottom, left
++ border - width, style, color
+
+### Display types
+
+Important display types:
+
++ none
++ block
++ inline
++ inline-block
+
+Block elements stretch the full width of their container, behave as though
+there is a line break before and after them and allow you to manipulate the
+full box model.
+
+Inline elements, on the other hand, typically fall within block-level
+elements, do not take up the full width of their container and don't
+generate a line break before or after.
+
+Inline-block elements don't take up the full width of their container or
+add new lines before or after, but you can manipulate the full box model
+for them.
+
+So to create a button, for example, you can set the display type to block
+in order to have the item take up the full width of its container and have
+a newline before and after it.
+
+### Horizontal centering
+
+Centering a block-level element is best done by declaring a width and then
+setting left and right margins to auto.
+
+For inline and inline-block elements, just use `text-align: center`.
