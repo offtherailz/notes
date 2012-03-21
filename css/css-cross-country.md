@@ -100,3 +100,53 @@ The last digit measures the number of element selectors. The third counts
 the total number of class selectors. The second counts id selectors, and
 the first considers whether or not there are inline styles. (An important
 value in a declaration can override all of this anyhow.)
+
+## Level 3
+
+### The box model
+
+Every element on the page is outlined by a box - with sub-boxes for the
+content area, padding, border and margin. The width is calculated as
+follows: content width + padding width + border width.
+
+What happens when content overflows its box? The overflow property controls
+this. It can be set to visible, auto, hidden or scroll. Visible simply
+breaks the boundaries of the box. Auto will add scrollbars as needed if
+there's overflow. Hidden will never add scroll or break any boundary. It
+hides extra content. Scroll will always add scrollbars, even if there's no
+overflow.
+
+We can also control positioning with the position property. The choices for
+position are static, relative, absolute and fixed. (The default is static.)
+If you use any value other than static, the object is considered
+a positioned element. Such positioned elements can use top, left, bottom or
+right properties for placement.
+
+As an example, here's how you might do a superscript (with a `<sup>`
+element):
+
+    sup {
+      position: relative;
+      top: -0.5em;
+    }
+
+So what do the non-static options do?
+
++ relative: renders in the normal flow, then shifted with positioning
+  properties (top, left, bottom and right)
++ absolute: renders outside the normal flow for manual positioning
++ fixed: fixes an element to a specific place in the window, regardless of
+  scrolling
+
+When dealing with absolute positioning, there's a danger. Unless the
+surrounding element is a positioned one, the absolute element will stay
+with the page only if the window and the surrounding element stay the same
+size. If the window is expanded, then the absolute element will move along
+with it. A solution is to make sure that the surrounding element is
+positioned with `position: relative` (and no placement properties).
+
+When multiple items are positioned, you can get overlap. the z-index
+property controls overlap manually. If therer's no z-index set or they are
+equal, then overlap is determined by DOM order (second overlaps first).
+Otherwise, the higher z-index wins. Only positioned elements allow z-index
+to take effect.
