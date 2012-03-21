@@ -204,3 +204,23 @@ Centering a block-level element is best done by declaring a width and then
 setting left and right margins to auto.
 
 For inline and inline-block elements, just use `text-align: center`.
+
+## Lesson 5
+
+### Protecting your layout
+
+Don't apply margin only to one element (that may disappear). Apply margins
+to all elements, so that even if an element moves or disappears, your
+overall layout will remain the same. Note: Don't forget margin collapsing.
+Top and bottom margins are not additive; they collapse. However, margins do
+not collapse when one or more block elements has padding, border, relative
+or absolute positioning or a left or right float.
+
+### Specificity problems
+
+
+### Resets and normalization
+
+You should try to have sensible defaults and setting for everything.
+Consider using a reset or normalization CSS file (presumably before you add
+CSS of your own).
