@@ -263,3 +263,43 @@ use auto on the image itself to scale more proportionally. Example:
       height: 150px;
       width: auto;
     }
+
+## Level 7
+
+### Image replacement
+
+Don't use an empty element with a background link for a logo. Instead put
+the text in, and then use `text-indent: -9999;` to move the image off
+screen forever.
+
+### Sprites
+
+If you have multi-state images, you have a few problems. First, the default
+technique causes more round trips to the server to get resources. Second,
+when the images swap, you get a flash effect when one isn't loaded or
+cached yet.
+
+Sprites fix this by combining multiple images into one file. Then when you
+want to swap the images, you simply use the background-position property to
+move as needed. For example:
+
+    .logo {
+      background: url(logo.png);
+      display: block;
+      height: 100px;
+      width: 200px;
+      text-indent: -9999px;
+    }
+    .logo:hove, .logo:focus {
+      background-position: 0 -100px;
+    }
+
+Notice that you don't need to set the background position for the initial
+logo, since the default of 0 0 is correct. (With background-position, the
+first number is x-axis and the second is y-axis.) You can do much more
+fancy things with multi-image, multi-state sprites as well.
+
+### Base64 encoding
+
+You can pipe your image directly into your code using Base64, but it isn't
+supported by IE below 8. No real discussion of this option.
