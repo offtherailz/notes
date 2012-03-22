@@ -218,9 +218,48 @@ or absolute positioning or a left or right float.
 
 ### Specificity problems
 
+If you have a set of styles defined for something like `.sidebar ul li`,
+you have to remember various problems that may occur. First, those styles
+won't apply to a list in another class. You don't want to copy-paste and
+violate DRY. So you might try `ul li`, but then it hits every unordered
+list. So, you can abstract and apply some class to both lists. Fine, but
+now you have to keep in mind default settings for other lists.
 
 ### Resets and normalization
 
 You should try to have sensible defaults and setting for everything.
 Consider using a reset or normalization CSS file (presumably before you add
 CSS of your own).
+
+## Level 6
+
+### Images: content or layout
+
+If an image is content, they belong in your HTML. If the image is
+decorative, it belongs in your CSS. That was easy enough.
+
+### Image cropping
+
+Don't simply set a fixed height and width for disparately sized images. It
+distorts some of them. Instead, use the `overflow: hidden` property to
+a crop class. But this also sucks: the cropping is random and not optimized
+per image. A better way to do it is to set height or width to a fixed
+number, but then the other to `auto`, depending on whether the image is
+portrait or landscape layout. But if you have a mixture of sizes, this is
+going to break one or the other. So the best solution is to resize all your
+images to a square which is less than the height and width of all images.
+
+When setting height and width, you put the absolute height and width on the
+parent element first. You also set overflow to hidden there. Then you can
+use auto on the image itself to scale more proportionally. Example:
+
+    .store li {
+      height: 150px;
+      width: 150px;
+      overflow: hidden;
+    }
+
+    .store li img {
+      height: 150px;
+      width: auto;
+    }
