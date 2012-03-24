@@ -303,3 +303,36 @@ fancy things with multi-image, multi-state sprites as well.
 
 You can pipe your image directly into your code using Base64, but it isn't
 supported by IE below 8. No real discussion of this option.
+
+## Level 8
+
+### Pseudo-classes
+
+Instead of adding a 'last' class, you can use pseudo-classes like
+'li:last-child' instead. Pseudo-classes let you conditionally select an
+element based on its state or position.
+
+Other important pseudo-classes:
+
++ :nth-child(odd) or :nth-child(even) or :nth-child(an+b)
++ :hover
++ :focus
++ :active
++ :visited
++ :first-child
++ :last-child
++ :only-child
++ :nth-of-type()
+
+### Pseudo-elements
+
+You can use pseudo-elements to add content. Important ones:
+
++ :before
++ :after
++ :first-letter
++ :first-line
+
+You use the 'content' property with these items, though in some cases that
+property will be empty. (For example, it will be empty if you're adding
+a decorative graphic as a blockquote marker.)
