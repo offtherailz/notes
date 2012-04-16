@@ -157,3 +157,38 @@ function that invokes Jasmine itself:
     </script>
 
 Now you can run your tests simply by opening that HTML file in a browser.
+
+## Collections
+
+Collections manage groups of models. They fetch model data, add to the
+existing set, remove from the set and (allow for? create? implement?)
+custom query code (?). You should expect to need a collection for each
+model you create.
+
+You create a collection by extending `Backbone.Collection`. You must
+specify what model this collection manages. Backbone doesn't do any
+introspection or guessing based on names.
+
+    window.Albums = Backbone.Collection.extend({
+      model: Album,
+      url: '/albums'
+    });
+
+You can also specify the URL where your app will expect to connect with
+this collection. A reasonable default is `url: '/albums'`. That is, use the
+plural of the model name, just as for the collection itself. Then you can
+use '/things' for the index/show page and '/thing/123' for a specific
+look-up, just as in Rails.
+
+If you're using Underscore with Backbone, then all the Underscore helper
+methods are available to use on the collection object. Collections also
+fire events when things are added, removed or reset. This allows them to
+play with views as well.
+
+## Collections and Views
+
+Views in Backbone -- or client-side apps in general -- are different from
+those in server-side frameworks like Rails. Instead of building up a final,
+single view from multiple pieces and then delivering it to the client,
+Backbone views can have other views inside them. Individual subviews can
+update their content at any time without touching the others.
