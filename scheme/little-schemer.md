@@ -139,3 +139,101 @@ Commandment:
 > Always change at least one argument while recurring. It must be changed
 > to be closer to termination. The changing argument must be tested in the
 > termination condition: when using `cdr`, test termination with `null?`.
+
+## Chapter 4: Numbers Games
+
+We move from textual atoms to numbers now. Numbers are still atoms.
+Negative numbers and floats are also atoms, but the book considers only
+nonnegative integers.
+
+They immediately introduce two new functions -- `add1` and `sub1`.
+
+    (define add1
+      (lambda (n)
+        (+ n 1)))
+
+    (define sub1
+        (lambda (n)
+          (- n 1)))
+
+We need to add these to Scheme. They also introduce `zero?` which is built
+in.
+
+Using these three as primitives, they want us to define a function `o+`.
+Here it is now:
+
+    (define o+
+      (lambda (x y)
+        (cond
+          ((zero? x) y)
+          (else (add1 (o+ y (sub1 x)))))))
+
+They point out that `zero?` takes the place of `null?` as the base case,
+and that `add1` takes the place of `cons`. `cons` builds lists, and `add1`
+builds numbers, as they put it.
+
+Next is `o-` which defines subtraction in terms of `zero?` and `sub1`.
+
+
+    (define o-
+      (lambda (x y)
+        (cond
+          ((zero? y) x)
+          (else (sub1 (o- x (sub1 y)))))))
+
+They next introduce tuples. A tuple is a list of numbers, e.g. `(1 2 3)`.
+The next job is to build a function `addtup` that adds all those numbers.
+
++ Use `o+` instead of `cons` to build up the final reasult.
++ The terminal condition when building lists returns `()`. The terminal
+  condition here -- when building a number -- should return 0.
++ The natural terminal condition is `null? tup`. That's the same as working
+  on lists, since we are removing one item at a time (using `car`) and then
+  recursing over the `cdr` of the tuple.
++ Just as `cons` builds lists, `addtup` builds a number by totaling all the
+  numbers in a tuple.
+
+This leads them to revise The First Commandment:
+
+> When recurring on a list of atoms, `lat`, ask two questions about it:
+> `(null? lat)` and else.
+> When recurring on a number, `n`, ask two questions about it: `(zero? n)`
+> and else.
+
+Here is `addtup`:
+
+    (define addtup
+      (lambda (tup)
+        (cond
+          ((null? tup) 0)
+          (else (o+ (car tup) (addtup (cdr tup)))))))
+
+
+In the process of writing `o*`, a multiplication function for two numbers,
+they also revise The Fourth Commandment:
+
+> Always change at least one argument while recurring. It must be changed
+> to be closer to termination. The changing argument must be tested in the
+> termination condition: when using `cdr`, test termination with `null?`
+> and when using `sub1`, test termination with `zero?`
+
+Here is `o*`:
+
+    (define o*
+      (lambda (x y)
+        (cond
+          ((zero? y) 0)
+          (else (o+ x (o* x (sub1 y)))))))
+
+After introducing the multiplication function, they introduce The Fifth
+Commandment:
+
+> WHen building a value with +, always use 0 for the value of the
+> terminating line, for adding 0 does not change the value of an addition.
+>
+> When building a value with *, always use 1 for the value of the
+> terminating line, for multiplying by 1 does not change the value of
+> a multiplication.
+>
+> When building a value with `cons`, always consider () for the value of
+> the terminating line.
