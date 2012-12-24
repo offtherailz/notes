@@ -87,3 +87,55 @@ First check if `lat` is empty. If it is then `a` is not a member (trivially).
 Otherwise, check if the `car` of `lat` is `a` or whether `a` is a member of
 the `cdr` of `lat`. So we keep trying the first item and then recursing on
 the tail until we hit the empty list.
+
+## Chapter 3: Cons the Magnificent
+
+They walk through creating the function `rember`. The function takes two
+arguments, an atom and a list. It removes the first instance of the atom
+(if found) and returns the rest of the list.
+
++ Test for the empty list. If the list is empty, return an empty list.
++ Check if the `car` of the list (which we now know is not empty) is equal
+  to the atom.
+    + Use `cond` to ask questions about the list. The syntax is this:
+        (cond
+            (predicate return-value)
+            (predicate return-value)...)
+    + Use `eq?` to test the equality of atoms.
+    + If `car lat` is equal to the given atom, then return `cdr lat`.
+    + If `car lat` is not equal to the atom, then call `rember a` on the
+      `cdr` of the original list.
+
+> The First Commandment: (preliminary) Always ask `null?` as the first
+> question in expressing any function (over lists, I'm assuming).
+
+They then switch to multi versions of functions. The trick to
+a multi-remove or a multi-replace, is that you need to add the result of
+the first operation to the recursion. To to this, they introduce The Second
+Commandment:
+
+> Use `cons` to build lists.
+
+Then while building up a function `firsts` -- which returns the first item
+from a series of lists -- they introduce The Third Commandment:
+
+> When building a list, describe the first typical element, and then `cons`
+> it onto the natural recursion.
+
+Example for `firsts`
+
+    (firsts '((a b) (c d) (e f))) ; result is (a c e)
+
++ The typical element is `a`, `c` or `e`. That is, `(car (car l))`
++ Take that and `cons` it onto the natural recursion as so:
+
+        (cons (car (car l)) (firsts (car l)))
+              ^^^^^^^^^^^^^ ^^^^^^^^^^^^^^^^
+              Typical elem  Natural recursion
+
+Finally, while introducing `multiinsertL`, they introduce The Fourth
+Commandment:
+
+> Always change at least one argument while recurring. It must be changed
+> to be closer to termination. The changing argument must be tested in the
+> termination condition: when using `cdr`, test termination with `null?`.
