@@ -228,7 +228,7 @@ Here is `o*`:
 After introducing the multiplication function, they introduce The Fifth
 Commandment:
 
-> WHen building a value with +, always use 0 for the value of the
+> When building a value with +, always use 0 for the value of the
 > terminating line, for adding 0 does not change the value of an addition.
 >
 > When building a value with *, always use 1 for the value of the
@@ -237,3 +237,74 @@ Commandment:
 >
 > When building a value with `cons`, always consider () for the value of
 > the terminating line.
+
+## Chapter 5: *Oh My Gawd*: It's Full of Stars
+
+They now introduce functions that work on lists of atoms or lits with
+arbitrarily-nested sub-lists as well. The first trick here is to check if
+the `car` is an atom (using `atom?`). If it's not recurse down the `car`
+itself until we hit an atom. All else is like the last chapter.
+
+The first example is a function to remove an item wherever it appears in
+a list or sub-lists:
+
+    (define rember*
+      (lambda (a lat)
+        (cond
+          ((null? lat) (quote ()))
+          ((atom? (car lat))
+                  (cond
+                    ((eq? a (car lat))
+                     (rember* a (cdr lat)))
+                    (else (cons (car lat)
+                                (rember* a (cdr lat))))))
+          (else (cons (rember* a (car lat))
+                      (rember* a (cdr lat)))))))
+
+They then go through the similar `insertR*` which inserts some atom to the
+right of another atom in arbitrarily nested S-expressions. That leads to
+the final version of The First Commandment:
+
+> When recurring on a list of atoms, `lat`, ask two questions about it:
+> `(null? lat)` and else.
+> When recurring on a number, `n`, ask two questions about it: `(zero? n)`
+> and else.
+> When recurring on a list of S-expressions, `l`, ask three questions about
+> it: `(null? l)`, `(atom? (car l))`, and else.
+
+After talking over what makes `*` functions special (they recur on the
+`car` and the `cdr` of a list, and they ask three questions), the authors
+revise The Fourth Commandment for the last time as well.
+
+> Always change at least one argument while recurring. When recurring on
+> a list of atoms, `lat`, use `(cdr lat)`. When recurring on a number, `n`,
+> use `(sub1 n)`. And when recurring on a list of S-expressions, `l`, use
+> `(car l)` and `(cdr l)` if neither `(null? l)` nor `(atom? (car l))` are
+> true.
+>
+> It must be changed to be closer to termination. The changing argument
+> must be tested in the termination condition:
+>
+> when using `cdr`, test termination with `null?` and
+> when using `sub1`, test termination with `zero?`.
+
+In the course of writing and rewriting a number of equality-testing
+functions, the authors post The Sixth Commandment:
+
+> Simplify only after the function is correct.
+
+### Equality?
+
+At this point, we have written three functions to test equality, and we're
+using two more that are primitives. Let's take a look and review.
+
++ Built-ins
+    + = x y       ; Compares two numerical values
+    + eq? x y     ; Compares pointers not values
+    + eqv? x y    ; Compares identity of objects
+    + equal? x y  ; Compares values and can handle lists, atoms, chars, etc.
++ Ours
+    + eqan? x y   ; Compares two items, atoms or numbers They use eq? or =.
+                    I'm not sure why they don't just use equal?
+    + eqlist? x y ; Compares two lists
+    + my-equal x y; Compares two of anything using eqan? and eqlist?
