@@ -308,3 +308,16 @@ using two more that are primitives. Let's take a look and review.
                     I'm not sure why they don't just use equal?
     + eqlist? x y ; Compares two lists
     + my-equal x y; Compares two of anything using eqan? and eqlist?
+
+## Chapter 6: Shadows
+
+While discussing a function `value`, they introduce The Seventh
+Commandment:
+
+> Recur on the subparts that are of the same nature:
+>    * On the sublists in a list.
+>    * On the subexpressions of an arithmetic expression.
+
+Then soon after, they introduce The Eighth Commandment:
+
+> Use help functions to abstract from representations.
