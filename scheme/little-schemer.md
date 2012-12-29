@@ -321,3 +321,112 @@ Commandment:
 Then soon after, they introduce The Eighth Commandment:
 
 > Use help functions to abstract from representations.
+
+## Chapter 8: Lambda the Ultimate
+
+As the title suggests, Chapter 8 introduces higher-order functions:
+functions that accept and return other functions as values.
+
+They start with accepting a function as a value, using `rember-f` as an
+example. `rember-f` is a function that receives three arguments:
+
++ A function with an equality test of some kind
++ An item to test for
++ A list to consider
+
+The function `rember-f` then applies the test to all items in the list. The
+return value is the original list minus anything that tests equal to the
+item according to the given equality test. An example:
+
+    (define rember-f
+      (lambda (test? s l)
+        (cond
+          ((null? l) (quote ()))
+          ((test? (car l) s) (cdr l))
+          (else (cons (car l) (rember-f test? s (cdr l))))))))
+
+    (rember-f = 5 '(4 5 6 7 6)) ; returns (4 6 7 6)
+
+They then turn to returning a function as a value. Their example:
+
+    (lambda (a)
+      (lambda (x)
+        (eq? x a)))
+
+This is a function that accepts one argument, `a`, and returns the function,
+`(lambda (x) (eq? x a))`.
+
+They also mention that this is called "Currying", but the dreaded 'this'
+problem pops up. It's not 100% clear to me what 'this' is here. So, to
+clarify, the Currying is the process of taking a multi-argument function,
+like `(eq? x a)`, and turning it into a series of functions, each of which
+only receives exactly one argument. The wrapper function becomes
+a single-use function for equality: you use it only to test if something is
+`eq? a`.
+
+Next they apply Currying to the rewrite of `rember-f`:
+
+    (define rember-f
+      (lambda (test?)
+        (lambda (s l)
+        (cond
+          ((null? l) (quote ()))
+          ((test? (car l) s) (cdr l))
+          (else (cons (car l) ((rember-f test?) s (cdr l))))))))
+
+Notice that nearly nothing changes. We make the first function a one
+argument function, and we make its return value the inner `(lambda ...)`.
+Other than that, we have to change the call to `rember-f` itself on the
+last line, but that's it.
+
+They then walk you through a sequence where you rewrite `insertL` as
+`insertL-f` and `insertR` as `insertR-f`. In each case, you pass a `test?`
+function the the outer function. The outer function applies the test and
+then branches. If the test is true, it inserts an item to the left or
+right. If the test is not true, it applies `cons (car l)` and the recurses
+on the `(cdr l)`.
+
+What they draw out of this is that the two functions differ *only in
+a small area*, namely the what to do if the test is true. You can remove
+this difference by abstracting away and passing a function in that does the
+right `cons`. First they define two `seq` functions:
+
+    (define seqL
+      (lambda (new old l)
+        (cons new (cons old l))))
+
+    (define seqR
+      (lambda (new old l)
+        (cons old (cons new l))))
+
+Note that when the functions are actually called `l` will not be the whole
+outer list but rather `cdr l` of that larger list. But inside the
+abstracted function, we don't need to care about that.
+
+Once we have the two sequences, we can easily write a wrapper function that
+accepts any sequence function as its one argument:
+
+    (define insert-g
+      (lambda (seq)
+        (lambda (new old l)
+          (cond
+            ((null? l) (quote ()))
+            ((eq? (car l) old) (seq new old (cdr l)))
+            (else (cons (car l) ((insert-g seq) new old (cdr l))))))))
+
+They reveal a nice side-effect while creating a `seq` function for `rember`
+(removing an old item when it's found). If you have a function that doesn't
+use of the arguments of a wrapper function, you can just pass `#f` there as
+a placeholder.
+
+    (define seqRem
+      (lambda (new old l)
+        l))
+
+    (define rember
+      (lambda (a l)
+        (insert-g seqRem) #f a l))
+
+All of this leads them to define The Ninth Commandment:
+
+> Abstract common patterns with a new function.
