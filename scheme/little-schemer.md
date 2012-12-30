@@ -430,3 +430,103 @@ a placeholder.
 All of this leads them to define The Ninth Commandment:
 
 > Abstract common patterns with a new function.
+
+The function `multirember&co` leads into collectors (a.k.a. continuations).
+In such a function, as the recursion occurs values are accumulated in two
+further lists, one for values that pass a test and one for values that fail
+the test. This allows you to do things like remove all odd numbers from
+a list and count how many evens (or odds) you have at the end.
+
+    (define multirember&co
+      (lambda (a lat k)
+        (cond
+          ((null? lat) (k (quote ()) (quote())))
+          ((eq? (car lat) a)
+           (multirember&co a (cdr lat)
+                           (lambda (newlat seen)
+                             (k newlat
+                                  (cons (car lat) seen)))))
+          (else
+            (multirember&co a (cdr lat)
+                            (lambda (newlat seen)
+                              (k (cons (car lat) newlat) seen)))))))
+
+The third parameter `col` is the collection or continuation function. The
+trick is that each time recursion occurs, in either branch of the `cond`,
+`col` is passed as well.
+
+I'm having a very hard time following this, so let's try to walk through
+a simple example.
+
++ a will be `'foo`, lat will be `'(foo b b)` and col will be `(lambda (x, y)
+  length y)`
+
++ First call to `multirember&co` (original call)
+    + 'a = 'foo
+    + lat = '(foo b b)
+    + k = k
+        + Step one: is the list (foo b b) null? - #f
+        + Step two: is the car of lat eq? to foo? - #t
++ Second call to `multirember&co` (from the `eq?` branch)
+    + 'a = 'foo
+    + lat = '(b b)
+    + k = k-wrapped-once
+        + Step one: is the list (b b) null? - #f
+        + Step two: is the car of lat eq? to foo? - #f
++ Third call to `multirember&co` (from the `else` branch)
+    + 'a = 'foo
+    + lat = '(b)
+    + k = k-wrapped-twice
+        + Step one: is the list (b) null? - #f
+        + Step two: is the car of lat eq? to foo? - #f
++ Fourth call to `multirember&co` (from the `else` branch)
+    + 'a = 'foo
+    + lat = '()
+    + k = k-wrapped-thrice (!)
+        + Step one: is the list () null? - #t
+        + Step two: we've bottomed out: call k-wrapped-thrice and feed it
+          two empty lists as its arguments.
+
+So, this description is good, but the last part of the puzzle is what do
+the various `k-wrapped` functions look like?
+
+Here's the original `k` again:
+
+    (lambda (x y) length y)
+
+Here's `k-wrapped-once`:
+
+    (lambda (newlat seen) (k newlat (cons 'foo seen))
+
+Now we get the point of my naming scheme `k-wrapped-*`. The continuations
+under `eq?` or `else` *wrap* the previous `k` in another lambda function.
+
+Continuing, here's `k-wrapped-twice`:
+
+    (lambda (newlat seen) (k-wrapped-once (cons 'b newlat) seen))
+
+Finally, here's `k-wrapped-thrice`:
+
+    (lambda (newlat seen) (k-wrapped-twice (cons 'b newlat) seen))
+
+When we finally call `k-wrapped-thrice` -- because the original `lat` has
+been emptied out -- the arguments for `newlat` and `seen` are empty lists.
+That way, as the wrapped functions unwind, the items collected from
+previous calls are `cons`-ed onto first the empty list and then onto
+whatever lists are passed up in turn. So in this way, the wrapper functions
+serve as the equivalent of accumlator arrays in a language like C or Ruby.
+That helps to explain why Friedman and Felleisen call these collector
+functions. (Continuation makes sense too, since these functions continue
+the processing of the values passed along by the outermost function.)
+
+Oh, and I forgot to mention: when we finally reach the call to the original
+`k`, the second parameter will be `'(b b)`. So the ultimate return value of
+my example will be the boring 2. :)
+
+In addition to reading and re-reading *The Little Schemer*, the following
+links helped me a great deal.
+
++ [Stackoverflow post 1](http://stackoverflow.com/q/7004636/26702)
++ [Stackoverflow post 2](http://stackoverflow.com/q/10692449/26702)
++ [Stackoverflow post 3](http://stackoverflow.com/q/10499514/26702)
++ [Unpacking multirember&co from TLS](http://www.michaelharrison.ws/weblog/?p=34)
