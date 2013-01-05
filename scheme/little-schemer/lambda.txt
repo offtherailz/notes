@@ -1,0 +1,14 @@
+; Let's do some logic with the lambda calculus.
+
+; First, some definitions.
+true := λx.λy.x
+false := λx.λy.y
+and := λp.λq.p q p
+or := λp.λq.p q q
+ifthenelse := λp.λa.λb.p a b
+
+
+and true false
+-> ((λ.p.λ.q.p q p) true) false
+-> ((λ.p.l.q.p q p) λ.x.λ.y.x) false
+-> (((λ.x.λ.y.x) λ.x.λ.y.y λ.x.λ.y.x) false
