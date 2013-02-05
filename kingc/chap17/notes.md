@@ -74,7 +74,7 @@ The `NULL` macro is defined in seven headers (one is C99 only):
 + locale.h
 + stddef.h
 + stdio.h
-+ stdlib.h
++ stdlib.h (which gives us `malloc`, `calloc`, and `realloc`)
 + string.h
 + time.h
 + wchar.h (C99 only)
@@ -171,7 +171,7 @@ long. Like `malloc`, it returns a null pointer if the space isn't
 available. But unlike `malloc`, `calloc` also initializes the array by
 setting all bits in it to 0.
 
-You can use `calloc` to allocates space for any object (not just an array).
+You can use `calloc` to allocate space for any object (not just an array).
 For example:
 
     struct point { int x, y; } *p;
