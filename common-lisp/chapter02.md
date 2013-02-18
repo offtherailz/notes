@@ -72,3 +72,73 @@ they exhibit the same behavior. They return `nil` when used on an empty
 list.
 
 In addition, the `cdr` of a one-item list is `nil` as well.
+
+## cons
+
+The `cons` function creates cons cells. It takes two inputs; it returns
+a pointer to a new cons cell whose `car` points to the first input and
+whose `cdr` points to the second. `cons` stands for construct.
+
+We can say, as a shorthand, that `cons` adds an item to the front of the
+list. But internally, `cons` is more basic than this. Here is what `cons`
+really does:
+
+1. Create one new cons cell.
+1. Make the new cons cell point to the head of the second input.
+1. Return a pointer to the new cons cell.
+
+Thus, in effect, `cons` returns a cons cell chain one longer than the
+second input. But this is almost a side effect. `cons` itself doesn't know
+anything about lists or the front of a list.
+
+## cons and the empty list
+
+If you `cons` something onto `nil`, you get a list of one element:
+
+    (cons 'frob '())
+    (cons 'frob nil) ;; Same as above
+
+In printed notation, consing something onto `nil` is equivalent to throwing
+an extra pair of parentheses around it.
+
+    (cons '(phone home) nil) ; => ((phone home))
+
+## Building nested lists with cons
+
+If the first input to `cons` is a nonempty list, the result will be
+a nested list. That is a list with more than one level of cons cells.
+
+## cons can build lists from scratch
+
+You can use successive `calls` to cons to build a list from scratch. Simply
+`cons` the first item onto `nil` and the rest of the items onto the
+resulting list of each last `cons` call.
+
+## Symmetry of cons and car/cdr
+
+Given a list x, if you know the `car` of x and the `cdr` of x, you can use
+`cons` to work out the whole list.
+
+More formally:
+
+    x = (cons (car x) (cdr x))
+
+But this only holds for nonempty lists. If the original x is `nil`, then
+this doesn't work. (Can you see why? If you use `cons` on `nil` and `nil`,
+you don't get `nil`. Instead you get `(nil)`.)
+
+## List
+
+It is common to want to take a bunch of inputs and make a new list from
+them. Lisp provides `list` to do just that. It takes any number of inputs
+and returns a new cons cell chain ending in `nil`. The new cell chain has
+as many cells as there are inputs.
+
+What `list` really does is create a new cons cell for each input. Then it
+fills in the `car` pointers with references to the input values. Then it
+fills in the `cdr` pointers to form a chain. Finally, `list` returns
+a pointer to the first cell.
+
+`cons` and `list` are very different. `cons` makes a single new cons cell.
+`list` makes a new cons cell for each input. We can think of `list` as
+expanding into a chain of calls to `cons`.
