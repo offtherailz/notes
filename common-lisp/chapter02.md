@@ -142,3 +142,11 @@ a pointer to the first cell.
 `cons` and `list` are very different. `cons` makes a single new cons cell.
 `list` makes a new cons cell for each input. We can think of `list` as
 expanding into a chain of calls to `cons`.
+
+## Replacing the first element of a list
+
+You can easily replace the first element of a list by `cons`-ing the new
+item onto the `cdr` of the original list. This doesn't actually "create
+a new list". Instead it simply creates a new cons cell with the new item
+and return a pointer to that item. That item's `cdr` points to the *second*
+item in the previous list. Hence it's all just simple pointer manipulation.
