@@ -150,3 +150,58 @@ item onto the `cdr` of the original list. This doesn't actually "create
 a new list". Instead it simply creates a new cons cell with the new item
 and return a pointer to that item. That item's `cdr` points to the *second*
 item in the previous list. Hence it's all just simple pointer manipulation.
+
+## (Advanced Topics) Unary Arithmetic with Lists
+
+Lists can be used to do unary (base one) artithmetic. In a unary numeric
+system, numbers are simply marks or tally symbols. One mark is one, two
+marks is two, and so forth. Zero is no marks. (Negative numbers are ignored
+for now.)
+
+He proposes to use X as the tally symbol. Unary numbers can therefore be
+written as lists of Xs.
+
++ 0 is NIL
++ 1 is (X)
++ 2 is (X X)
++ 3 is (X X X)
+
+The function `REST` can be used to subtract 1 in unary, since `(REST
+'(XXX))` would yield `(X X)`. (Note that this breaks down if you apply
+`REST` to NIL. It returns simply NIL. Negative numbers are ignored for now.)
+
+The function `LENGTH` converts unary numbers to regular integers.
+
+## (Advanced Topics) Nonlist Cons Structures
+
+A proper list is a cons cell chain ending in `NIL`. When you write or see
+lists in parentheses notation, the convention dictates that you leave out
+the final `NIL`. But it's there.
+
+    * * ----------> * * ----------> * * ----------> NIL
+    |               |               |
+    |               |               |
+    |               |               |
+    A               B               C
+
+However, there are cons cell structures that are not proper lists because
+their chains don't end in `NIL`. For example:
+
+    * * ----------> * * ----------> * * ----------> D
+    |               |               |
+    |               |               |
+    |               |               |
+    A               B               C
+
+In parenthesis notation, these two lists are as follows:
+
+    (A B C)
+    (A B C . D)
+
+If a list does not end in `NIL`, then Lisp prints a period (dot) before the
+final, non-`NIL` element in the list. Such a list is called a 'dotted list'
+as opposed to a proper list (which by definition ends in `NIL`).
+
+You can produce a dotted pair using `cons`:
+
+    (cons 'a 'b); => (a . b)
